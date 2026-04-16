@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import api from '@/lib/woocommerce'; // 引入刚才创建的配置
+const MOCK_BRANDS = ['Starpery', 'SE Doll', 'GameLady', 'Real Lady', 'Angel Kiss', 'Doll Castle'];
 
 // 1. 定义商品接口类型 (根据 WooCommerce 返回的数据结构)
 interface WooProduct {
@@ -106,7 +107,7 @@ export default async function Home() {
         <div className="container mx-auto text-center">
           <h3 className="text-2xl font-bold mb-8">Most Popular Sex Doll Brands</h3>
           <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
-            {MOCK_BRANDS.map((brand, i) => (
+            {MOCK_BRANDS.map((brand: string, i: number) => (
               <div key={i} className="min-w-[150px] md:min-w-[200px] aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden snap-center group">
                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all z-10"></div>
                  <span className="relative z-20 text-white font-bold">{brand}</span>
@@ -176,3 +177,4 @@ export default async function Home() {
     </div>
   );
 }
+
