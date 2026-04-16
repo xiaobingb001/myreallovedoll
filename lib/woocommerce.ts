@@ -1,11 +1,14 @@
+// lib/woocommerce.ts
+// @ts-ignore
 import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
 
 const api = new WooCommerceRestApi({
-  url: process.env.NEXT_PUBLIC_WORDPRESS_API_URL?.replace('/wp-json/wc/v3', '') || '', 
+  // 直接使用基础域名，不要带后缀，让 SDK 自己处理版本号
+  url: "https://admin.myreallovedoll.com", 
   consumerKey: process.env.WC_CONSUMER_KEY || '',
   consumerSecret: process.env.WC_CONSUMER_SECRET || '',
   version: "wc/v3",
-  queryStringAuth: true // 必须设置为 true 才能在 HTTPS 下正常工作
+  queryStringAuth: true 
 });
 
 export default api;

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import api from '@/lib/woocommerce'; // 引入刚才创建的配置
+export const revalidate = 0; // 强制每次请求都重新从 WordPress 获取最新数据
 const MOCK_BRANDS = ['Starpery', 'SE Doll', 'GameLady', 'Real Lady', 'Angel Kiss', 'Doll Castle'];
 
 // 1. 定义商品接口类型 (根据 WooCommerce 返回的数据结构)
