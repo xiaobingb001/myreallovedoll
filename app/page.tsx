@@ -1,26 +1,32 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import api from '@/lib/woocommerce'; // 引入刚才创建的配置
 
-// ==========================================
-// 1. 模拟数据 (Mock Data) - 后期将由 WooCommerce API 替换
-// ==========================================
-const MOCK_PRODUCTS = [
-  { id: 1, name: 'Gina 163cm D-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$2,050', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&h=700&fit=crop' },
-  { id: 2, name: 'Fiona 158cm G-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$1,999', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=700&fit=crop' },
-  { id: 3, name: 'Fade 159cm B-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$1,999', image: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=500&h=700&fit=crop' },
-  { id: 4, name: 'Diana 155cm A-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$1,999', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=700&fit=crop' },
-  { id: 5, name: 'Gina 163cm D-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$2,050', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&h=700&fit=crop' },
-  { id: 6, name: 'Fiona 158cm G-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$1,999', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=700&fit=crop' },
-  { id: 7, name: 'Fade 159cm B-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$1,999', image: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=500&h=700&fit=crop' },
-  { id: 8, name: 'Diana 155cm A-Cup Silicone Sex Doll', category: 'CHOCOLATE LADY DOLL', price: '$1,999', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=700&fit=crop' },
-];
+// 1. 定义商品接口类型 (根据 WooCommerce 返回的数据结构)
+interface WooProduct {
+  id: number;
+  name: string;
+  price: string;
+  images: { src: string }[];
+  categories: { name: string }[];
+}
 
-const MOCK_BRANDS = ['Starpery', 'SE Doll', 'GameLady', 'Real Lady', 'Angel Kiss', 'Doll Castle'];
+// 2. 将组件改为 async 异步函数
+export default async function Home() {
+  
+  let products: WooProduct[] = [];
+  
+  try {
+    // 3. 从后端获取商品数据 (获取最新的 8 个商品)
+    const response = await api.get("products", {
+      per_page: 8,
+      status: "publish",
+    });
+    products = response.data;
+  } catch (error) {
+    console.error("读取商品失败:", error);
+  }
 
-// ==========================================
-// 2. 页面主组件
-// ==========================================
-export default function Home() {
   return (
     <div className="min-h-screen bg-black font-sans text-white">
       
@@ -59,28 +65,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- Product Grid 核心产品区 --- */}
-      {/* 按照设计图，产品区背景是深灰黑色 */}
+      {/* --- Product Grid 核心产品区 (红框部分) --- */}
       <section className="bg-[#3a4047] py-16 px-4 md:px-12">
         <div className="container mx-auto">
           <h3 className="text-2xl font-bold mb-2 uppercase tracking-wide">❤️ THE SEXIEST COLLECTION SO FAR ❤️</h3>
           <p className="text-sm text-gray-300 mb-8">Chocolate Lady Dolls. Delicious. Limited availability.</p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {MOCK_PRODUCTS.map((product) => (
-              <Link href={`/product/${product.id}`} key={product.id} className="group bg-white rounded-md overflow-hidden text-black block hover:shadow-2xl transition-all">
-                <div className="relative aspect-[3/4] bg-gray-200">
-                  {/* 使用 Next/Image 优化图片加载 */}
-                  <img src={product.image} alt={product.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-1 font-bold rounded-sm">Lady</div>
-                </div>
-                <div className="p-4">
-                  <h4 className="text-sm font-semibold mb-1 h-10 overflow-hidden">{product.name}</h4>
-                  <p className="text-[10px] text-gray-500 mb-2 uppercase">{product.category}</p>
-                  <p className="font-bold">{product.price}</p>
-                </div>
-              </Link>
-            ))}
+            {products.length > 0 ? (
+              products.map((product) => (
+                <Link href={`/product/${product.id}`} key={product.id} className="group bg-white rounded-md overflow-hidden text-black block hover:shadow-2xl transition-all">
+                  <div className="relative aspect-[3/4] bg-gray-200">
+                    {/* 使用商品的第一张图，如果没有图则使用占位图 */}
+                    <img 
+                      src={product.images[0]?.src || '/placeholder.jpg'} 
+                      alt={product.name} 
+                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-1 font-bold rounded-sm">Lady</div>
+                  </div>
+                  <div className="p-4">
+                    <h4 className="text-sm font-semibold mb-1 h-10 overflow-hidden">{product.name}</h4>
+                    {/* 获取分类名称 */}
+                    <p className="text-[10px] text-gray-500 mb-2 uppercase">
+                      {product.categories[0]?.name || 'Uncategorized'}
+                    </p>
+                    <p className="font-bold">${product.price}</p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p className="text-white">Loading products...</p>
+            )}
           </div>
         </div>
       </section>
