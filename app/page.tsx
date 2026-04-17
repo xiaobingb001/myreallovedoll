@@ -1,9 +1,32 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import api from '@/lib/woocommerce'; // 引入刚才创建的配置
+import { useState, useEffect } from 'react'; 
 export const revalidate = 0; // 强制每次请求都重新从 WordPress 获取最新数据
 const MOCK_BRANDS = ['Starpery', 'SE Doll', 'GameLady', 'Real Lady', 'Angel Kiss', 'Doll Castle'];
 
+// 定义你的轮播图数据（包含图片路径、大标题、小标题）
+const MOCK_SLIDES = [
+  {
+    id: 1,
+    image: '/banner01.jpg', // 确保图片放在 public 文件夹
+    title: 'Feel Real Connection',
+    subtitle: 'Ultra-Realistic Silicone Companions Designed for Intimacy & Comfort'
+  },
+  {
+    id: 2,
+    image: '/banner02.jpg', 
+    title: 'Exquisite Craftsmanship',
+    subtitle: 'Experience the ultimate realism with medical-grade silicone.'
+  },
+  {
+    id: 3,
+    image: '/banner03.jpg', 
+    title: 'Private & Discreet',
+    subtitle: '100% Secure payment and anonymous packaging guaranteed.'
+  }
+];
 // 1. 定义商品接口类型 (根据 WooCommerce 返回的数据结构)
 interface WooProduct {
   id: number;
@@ -29,30 +52,80 @@ export default async function Home() {
     console.error("读取商品失败:", error);
   }
 
+export default function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // 设置自动轮播定时器，每 5 秒切换一次
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev === MOCK_SLIDES.length - 1 ? 0 : prev + 1));
+    }, 5000); // 5000 毫秒 = 5 秒
+
+    return () => clearInterval(timer); // 组件卸载时清除定时器，防止内存泄漏
+  }, []);
+
   return (
     <div className="min-h-screen bg-black font-sans text-white">
       
       {/* --- Header 顶部导航 --- */}
       <header className="bg-black py-6 text-center border-b border-gray-800">
-        <h1 className="text-4xl font-serif tracking-wider">
-          <span className="text-white">My</span><span className="text-red-800">Real</span><span className="text-gray-400">Doll</span>
-        </h1>
-        <p className="text-xs tracking-[0.3em] mt-2 text-gray-400">ULTRA REALISTIC COMPANIONS</p>
+        <Link href="/">
+          {/* src="/logo.png" 会自动去 public 文件夹里找这个图片 */}
+          <img src="/logo.jpg" alt="MyRealDoll Logo" className="h-16 object-contain mb-2" />
+        </Link>
       </header>
 
       {/* --- Hero Section 焦点图 --- */}
-      <section className="relative h-[600px] flex items-center justify-start px-12 md:px-24 bg-[#0a0a0a]">
-        {/* 这里应该是您的背景图，由于我没有原图，用深色渐变模拟 */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-0"></div>
-        <div className="relative z-10 max-w-2xl">
-          <h2 className="text-6xl font-serif mb-4 text-white">Feel Real <span className="italic text-gray-300">Connection</span></h2>
-          <p className="text-xl mb-8 text-gray-400 italic">
-            Ultra-Realistic Silicone Companions<br />
-            Designed for Intimacy & Comfort
+<section className="relative h-[650px] flex items-center justify-start px-12 md:px-24 bg-black overflow-hidden">
+        
+        {/* 循环渲染背景图，通过透明度控制显示哪一张 */}
+        {MOCK_SLIDES.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${
+              index === currentSlide ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            {/* 渐变遮罩，确保文字清晰可见 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-10"></div>
+            
+            {/* 背景图片 */}
+            <img 
+              src={slide.image} 
+              alt={slide.title} 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+        ))}
+
+        {/* 悬浮在背景之上的文字内容 (也会随着 currentSlide 动态改变) */}
+        <div className="relative z-20 max-w-2xl">
+          {/* 大标题：带有平滑的淡入淡出动画 */}
+          <h2 key={`title-${currentSlide}`} className="text-6xl font-serif mb-4 text-white animate-fadeIn">
+            {MOCK_SLIDES[currentSlide].title}
+          </h2>
+          
+          {/* 副标题 */}
+          <p key={`sub-${currentSlide}`} className="text-xl mb-8 text-gray-300 italic animate-fadeIn">
+            {MOCK_SLIDES[currentSlide].subtitle}
           </p>
+
           <button className="border border-yellow-600/50 text-white px-8 py-3 text-sm tracking-widest hover:bg-yellow-600/20 transition-all shadow-[0_0_15px_rgba(202,138,4,0.3)]">
             EXPLORE COLLECTION
           </button>
+
+          {/* 底部轮播小圆点指示器 */}
+          <div className="flex gap-2 mt-12">
+            {MOCK_SLIDES.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  index === currentSlide ? 'bg-yellow-600 w-8' : 'bg-gray-600'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -68,8 +141,8 @@ export default async function Home() {
       </section>
 
       {/* --- Product Grid 核心产品区 (红框部分) --- */}
-      <section className="bg-[#3a4047] py-16 px-4 md:px-12">
-        <div className="container mx-auto">
+      <section className="bg-[#000000] py-16 px-4 md:px-12">
+        <div className="container mx-auto" text-center>
           <h3 className="text-2xl font-bold mb-2 uppercase tracking-wide">❤️ THE SEXIEST COLLECTION SO FAR ❤️</h3>
           <p className="text-sm text-gray-300 mb-8">Chocolate Lady Dolls. Delicious. Limited availability.</p>
           
