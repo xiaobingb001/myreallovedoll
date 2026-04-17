@@ -47,7 +47,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!product) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans pt-24">
+    <div className="min-h-screen bg-black text-white font-sans pt-28">
       
       {/* --- 1. 面包屑导航 --- */}
       <nav className="px-6 py-4 text-xs text-gray-500 flex items-center gap-2 max-w-[1400px] mx-auto">
