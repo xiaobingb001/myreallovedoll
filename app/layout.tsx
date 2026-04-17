@@ -32,13 +32,23 @@ export default function RootLayout({
       {/* 确保全站默认是黑底白字 */}
       <body className="min-h-full flex flex-col bg-black text-white" suppressHydrationWarning>
         
-        {/* --- 页面主体内容区 (通过 flex-1 把页脚推到最底部) --- */}
-        <main className="flex-1">
-          {children}
-        </main>
 
-        {/* --- 全局页脚 Footer --- */}
-        <footer className="bg-[#000000] text-gray-300 py-16 px-4 md:px-12 text-sm border-t-4 border-gray-800">
+      {/* --- Header 顶部导航 (修改为固定悬浮、80%透明、无底线) --- */}
+
+      <header className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-md py-4 text-center transition-all">
+        <Link href="/" className="inline-block">
+          {/* src="/logo.jpg" 会自动去 public 文件夹里找这个图片 */}
+          <img src="/logo.jpg" alt="MyRealDoll Logo" className="h-12 md:h-20 object-contain mx-auto" />
+        </Link>
+      </header>
+
+      {/* --- 页面主体内容区--- */}
+      <main className="flex-1">
+        {children}
+      </main>
+
+      {/* --- 全局页脚 Footer --- */}
+      <footer className="bg-[#000000] text-gray-300 py-16 px-4 md:px-12 text-sm border-t-4 border-gray-800">
           <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             {/* 左侧信息 */}
             <div>

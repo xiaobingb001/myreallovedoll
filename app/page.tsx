@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import api from '@/lib/woocommerce'; 
-import HeroSlider from '@/components/HeroSlider'; // 引入轮播图组件
+import HeroSlider from '@/components/HeroSlider';
+import { MapPin, Clock, Phone, Globe } from 'lucide-react'; // 引入所需的图标
 
 export const revalidate = 0; // 强制每次请求都重新从 WordPress 获取最新数据
 
@@ -31,20 +32,12 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-black font-sans text-white">
-      
-      {/* --- Header 顶部导航 --- */}
-      <header className="bg-black py-6 text-center border-b border-gray-800">
-        <Link href="/" className="inline-block">
-          {/* src="/logo.jpg" 会自动去 public 文件夹里找这个图片 */}
-          <img src="/logo.jpg" alt="MyRealDoll Logo" className="h-16 object-contain mb-2 mx-auto" />
-        </Link>
-      </header>
 
-      {/* --- Hero Section 焦点轮播图 (独立组件) --- */}
+      {/* --- 2. Hero Section 焦点轮播图 (自动垫在 Header 下方) --- */}
       <HeroSlider />
 
-      {/* --- Features Bar 信任条 --- */}
-      <section className="bg-[#f5f5f5] text-black py-4 border-y border-gray-300">
+      {/* --- 3. Features Bar 信任条 --- */}
+      <section className="bg-[#f5f5f5] text-black py-4">
         <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-4 text-center text-xs">
           <div className="flex flex-col items-center"><span className="text-xl mb-1">🚚</span><b>Free Shipping</b><span className="text-gray-500">Worldwide Express Delivery</span></div>
           <div className="flex flex-col items-center"><span className="text-xl mb-1">🏷️</span><b>Best Price Guarantee</b><span className="text-gray-500">Found it cheaper? We match</span></div>
@@ -54,7 +47,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* --- Product Grid 核心产品区 --- */}
+      {/* --- 4. Product Grid 核心产品区 --- */}
       <section className="bg-[#000000] py-16 px-4 md:px-12">
         <div className="container mx-auto text-center">
           <h3 className="text-2xl font-bold mb-2 uppercase tracking-wide">❤️ THE SEXIEST COLLECTION SO FAR ❤️</h3>
@@ -88,8 +81,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* --- Brands Section 品牌区 --- */}
-      <section className="bg-white text-black py-12 px-4 border-b border-gray-200">
+      {/* --- 5. Brands Section 品牌区 --- */}
+      <section className="bg-white text-black py-12 px-4">
         <div className="container mx-auto text-center">
           <h3 className="text-2xl font-bold mb-8">Most Popular Sex Doll Brands</h3>
           <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
@@ -103,17 +96,66 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* --- Google Map 实体店地图区 --- */}
-      <section className="w-full h-[400px] bg-black filter grayscale hover:grayscale-0 transition-all duration-500">
-        <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3262.1158525049386!2d33.37699991524316!3d35.15372338032049!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14de1761922cbfff%3A0x8929e083c5090f7f!2sIheart%20coffee%20roaster!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus" 
-          width="100%" 
-          height="100%" 
-          style={{ border: 0 }} 
-          allowFullScreen={false} 
-          loading="lazy" 
-          referrerPolicy="no-referrer-when-downgrade"
-        ></iframe>
+      {/* ========================================================= */}
+      {/* --- 6. Google Map 实体店地图区 (修改为左右结构) --- */}
+      {/* ========================================================= */}
+      <section className="bg-[#111] border-t border-gray-800">
+        <div className="flex flex-col md:flex-row w-full max-w-[1600px] mx-auto">
+          
+          {/* 左侧：实体店详细信息 */}
+          <div className="md:w-1/3 p-10 md:p-16 flex flex-col justify-center space-y-6 text-gray-300">
+            <h3 className="text-3xl font-serif text-white mb-2">Iheart Coffee Roaster</h3>
+            
+            <div className="flex items-start gap-4">
+              <MapPin className="text-white shrink-0 mt-1" size={20} />
+              <p className="text-sm leading-relaxed">
+                Lemesou Avenue 79,<br />
+                Aglantzia 2121, Cyprus
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <Clock className="text-white shrink-0" size={20} />
+              <p className="text-sm">Open · Closes 6 PM</p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <Phone className="text-white shrink-0" size={20} />
+              <p className="text-sm">+357 22 251878</p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <Globe className="text-white shrink-0" size={20} />
+              <a href="https://iheartcoffeeroasters.com" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-white underline decoration-gray-600 underline-offset-4 transition-colors">
+                iheartcoffeeroasters.com
+              </a>
+            </div>
+            
+            {/* 导航按钮 */}
+            <a 
+              href="https://goo.gl/maps/..." 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="mt-4 border border-white text-white px-6 py-3 text-sm font-bold hover:bg-white hover:text-black transition-colors w-max text-center"
+            >
+              GET DIRECTIONS
+            </a>
+          </div>
+
+          {/* 右侧：Google Map 嵌入代码 */}
+          <div className="md:w-2/3 h-[400px] md:h-[500px] filter grayscale hover:grayscale-0 transition-all duration-500">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3262.1158525049386!2d33.37699991524316!3d35.15372338032049!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14de1761922cbfff%3A0x8929e083c5090f7f!2sIheart%20coffee%20roaster!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen={false} 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+
+        </div>
       </section>
 
     </div>
