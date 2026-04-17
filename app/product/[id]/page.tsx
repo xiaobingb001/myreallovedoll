@@ -4,9 +4,10 @@ import { ChevronRight, ShieldCheck, Truck, RefreshCcw, CreditCard, Star, Plus } 
 
 export const revalidate = 0;
 
-export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  // 在 Next.js 15 中，params 需要先 await。如果是 14 及以下版本直接使用即可。
-  const { id } = params;
+// 给 params 加上 Promise 类型
+export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  // 必须加上 await 关键字！
+  const { id } = await params;
   let product: any = null;
 
   try {
