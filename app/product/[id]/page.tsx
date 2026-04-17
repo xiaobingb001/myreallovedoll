@@ -5,14 +5,34 @@ import { ChevronRight, ShieldCheck, Truck, RefreshCcw, CreditCard, Star, Plus } 
 export const revalidate = 0;
 
 export default async function ProductDetailPage({ params }: { params: { id: string } }) {
+  // 在 Next.js 15 中，params 需要先 await。如果是 14 及以下版本直接使用即可。
   const { id } = params;
   let product: any = null;
 
   try {
     const response = await api.get(`products/${id}`);
     product = response.data;
-  } catch (error) {
-    return <div className="min-h-screen bg-black text-white flex items-center justify-center">Product Not Found</div>;
+  } catch (error: any) {
+    // 1. 在 Vercel 的 Logs 后台打印详细错误信息
+    console.error("WooCommerce API Error:", error.response?.data || error.message);
+    
+    // 2. 直接在网页上显示错误详情，方便排查
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-10 text-center">
+        <h1 className="text-2xl font-bold mb-4 text-red-500">Product Not Found (Debug Mode)</h1>
+        <div className="bg-zinc-900 border border-red-900 p-6 rounded-lg max-w-2xl text-left">
+          <p className="text-red-400 mb-2"><strong>Error Message:</strong> {error.message}</p>
+          <p className="text-gray-400 mb-2"><strong>Attempted ID:</strong> {id}</p>
+          <p className="text-gray-500 text-xs break-all mt-4 p-2 bg-black rounded">
+            <strong>Full API URL:</strong> {error.response?.config?.url || 'N/A'}
+          </p>
+          <p className="text-gray-500 text-xs mt-2">
+            * 如果 URL 里出现了重复的 /wp-json/wc/v3，请检查 lib/woocommerce.ts 的配置。
+          </p>
+        </div>
+        <Link href="/" className="mt-8 text-gray-400 hover:text-white underline transition-colors">Back to Home</Link>
+      </div>
+    );
   }
 
   if (!product) return null;
@@ -58,7 +78,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
               <p className="text-xs tracking-widest text-gray-500 mb-2">ZELEX® Inspiration Series</p>
               <h1 className="text-3xl md:text-4xl font-serif leading-tight mb-4">{product.name}</h1>
               <div className="flex items-center gap-4">
-                <span className="text-gray-500 line-through text-xl">${product.regular_price}</span>
+                {product.regular_price && <span className="text-gray-500 line-through text-xl">${product.regular_price}</span>}
                 <span className="text-2xl font-bold">${product.price}</span>
               </div>
               <p className="text-[10px] text-gray-500 mt-2">Tax included. <Link href="#" className="underline">Shipping</Link> calculated at checkout.</p>
@@ -91,7 +111,6 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
 
             {/* 5. Payment Methods 支付图标 */}
             <div className="flex justify-center gap-3 py-4 grayscale opacity-70">
-              {/* 这里放支付小图标图片 */}
               <div className="w-8 h-5 bg-gray-800 rounded"></div>
               <div className="w-8 h-5 bg-gray-800 rounded"></div>
               <div className="w-8 h-5 bg-gray-800 rounded"></div>
@@ -114,8 +133,6 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
           </div>
         </div>
       </main>
-
-      {/* 这里可以放置之前的 Related Products 和 Footer */}
     </div>
   );
 }
@@ -139,7 +156,6 @@ function AccordionItem({ title, content }: { title: string, content: string }) {
         <span>{title}</span>
         <Plus size={16} className="text-gray-500 group-hover:text-white transition-colors" />
       </div>
-      {/* 默认展开一部分或完全展开，取决于需求 */}
       <div className="mt-4 text-sm text-gray-500 leading-relaxed prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
     </div>
   )
